@@ -54,11 +54,12 @@ func commandExit(cMap map[string]cliCommand) error {
 }
 
 func commandMap(cMap map[string]cliCommand) error {
-	pokeapi.GetLocations()
+	pokeapi.GetNextLocations()
 	return nil
 }
 
 func commandMapB(cMap map[string]cliCommand) error {
+	pokeapi.GetPrevLocations()
 	return nil
 }
 
