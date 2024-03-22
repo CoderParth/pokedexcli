@@ -37,12 +37,18 @@ func GetPrevLocations() {
 	if locationResponse.Previous != "" {
 		pokeApiURL = locationResponse.Previous
 		getLocations()
+		return
 	}
 
 	fmt.Println("Error: You do not have any previously searched locations.")
 }
 
 func getLocations() {
+	if val, hasCache := cache.Get(pokeApiURL); hasCache {
+		printLocations(val)
+		return
+	}
+
 	res, err := http.Get(pokeApiURL)
 	if err != nil {
 		log.Fatal(err)
@@ -54,11 +60,15 @@ func getLocations() {
 		log.Fatal(err)
 
 	}
-	// fmt.Println(string(body))
+
+	cache.Add(pokeApiURL, body)
+	printLocations(body)
+}
+
+func printLocations(body []byte) {
 	if err := json.Unmarshal(body, &locationResponse); err != nil {
 		log.Fatal(err)
 	}
-	// fmt.Println(locationResponse)
 
 	for _, name := range locationResponse.Results {
 		fmt.Printf("%v\n", name.Name)
