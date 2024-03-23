@@ -36,6 +36,11 @@ var commands = map[string]cliCommand{
 		description: "Displays previous 20 locations",
 		callback:    commandMapB,
 	},
+	"explore": {
+		name:        "explore",
+		description: "Explore the list of pokemons in the provided area",
+		callback:    nil, // commandExplore is called explicitly as its parameters are different
+	},
 }
 
 func commandHelp(cMap map[string]cliCommand) error {
@@ -63,6 +68,10 @@ func commandMapB(cMap map[string]cliCommand) error {
 	return nil
 }
 
+func commandExplore(location string) {
+	pokeapi.ExplorePokemons(location)
+}
+
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
@@ -72,6 +81,14 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
 		fmt.Println()
+
+		// Check if the command contains explore {location}
+		if strings.Contains(text, "explore ") {
+			var location string = strings.TrimSpace(strings.TrimPrefix(text, "explore "))
+			commandExplore(location)
+			continue
+		}
+
 		command, ok := commands[text]
 		if ok {
 			command.callback(commands)
